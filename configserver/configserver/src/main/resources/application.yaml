@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: configserver
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+#  active: git
+#  cloud:
+#    config:
+#      server:
+#       git:
+#          uri: ${GIT_CONFIG_REPO_URI}
+#          default-label: ${GIT_CONFIG_REPO_DEFAULT_LABEL}
+#          timeout: 5
+#          clone-on-start: true
+#          force-pull: true
+#          username: ${GIT_CONFIG_REPO_USERNAME}
+#          password: ${GIT_CONFIG_REPO_PASSWORD}
+#  rabbitmq:
+#    host: ${SPRING_RABBITMQ_HOST:localhost}
+#    port: 5672
+#    username: "guest"
+#    password: "guest"
+#
+#server:
+#  port: 8071
+#management:
+#    endpoints:
+#      web:
+#        exposure:
+#          include: "*"
+#    health:
+#      readiness-state:
+#        enabled: true
+#      liveness-state:
+#        enabled: true
+#    endpoint:
+#      health:
+#        probes:
+#          enabled: true
+

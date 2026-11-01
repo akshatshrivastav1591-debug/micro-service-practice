@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/BuildingMicroServicesUsingSpringBoot.iml" filepath="$PROJECT_DIR$/.idea/BuildingMicroServicesUsingSpringBoot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CartService.main.iml" filepath="$PROJECT_DIR$/.idea/modules/CartService.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CartService.test.iml" filepath="$PROJECT_DIR$/.idea/modules/CartService.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PaymentService.main.iml" filepath="$PROJECT_DIR$/.idea/modules/PaymentService.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PaymentService.test.iml" filepath="$PROJECT_DIR$/.idea/modules/PaymentService.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ProductService.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ProductService.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ProductService.test.iml" filepath="$PROJECT_DIR$/.idea/modules/ProductService.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/UserService.main.iml" filepath="$PROJECT_DIR$/.idea/modules/UserService.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/UserService.test.iml" filepath="$PROJECT_DIR$/.idea/modules/UserService.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UserService/build/build.iml" filepath="$PROJECT_DIR$/UserService/build/build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PaymentService/PaymentService/build/build2.iml" filepath="$PROJECT_DIR$/PaymentService/PaymentService/build/build2.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,249 @@
+services:
+  #RabbitMq
+  rabbitMq:
+    image: "rabbitmq:latest"
+    container_name: rabbitmqmscontainer
+    ports:
+      - "5672:5672"
+
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    extends:
+      service: common-base-config
+      file: common-config.yml
+
+  #Config Server
+  configServer:
+    image: "microservice/configserver:v1"
+    env_file:
+      - .env
+    container_name: configmscontainer
+    ports:
+      - "8071:8071"
+    extends:
+      service: common-base-config
+      file: common-config.yml
+    environment:
+     SPRING_PROFILES_ACTIVE: prod
+     SPRING_RABBITMQ_HOST: "rabbitMq"
+     SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT_LABEL: ${GIT_CONFIG_REPO_DEFAULT_LABEL}
+     SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME: ${GIT_CONFIG_REPO_USERNAME}
+     SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD: ${GIT_CONFIG_REPO_PASSWORD}
+     SPRING_CLOUD_CONFIG_SERVER_GIT_URI: ${GIT_CONFIG_REPO_URI}
+    depends_on:
+       rabbitMq:
+         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8071/actuator/health/readiness"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+#User Service
+  user:
+    image: "microservice/userservice:v1"
+    container_name: usermscontainer
+    ports:
+      - "8080:8080"
+    extends:
+      service: microservices-base-config
+      file: common-config.yml
+    environment:
+      SERVER_PORT: 8080
+      DATABASE_URL: jdbc:postgresql://userdb:5432/${USER_SERVICE_DB_NAME}
+    depends_on:
+      userdb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      configServer:
+        condition: service_healthy
+#Product Service
+  product:
+    image: "microservice/productservice:v1"
+    container_name: productmscontainer
+    ports:
+      - "8090:8090"
+    extends:
+      service: microservices-base-config
+      file: common-config.yml
+    environment:
+      SERVER_PORT: 8090
+      MONGODB_URL: mongodb://product-db:27017/${PRODUCT_SERVICE_DB_NAME}
+      MONGODB_DBNAME: ${PRODUCT_SERVICE_DB_NAME}
+#      SPRING_PROFILES_ACTIVE: prod
+#      REDIS_HOST: ${REDIS_HOST}
+#      REDIS_PORT: ${REDIS_PORT}
+#      SPRING_RABBITMQ_HOST: "rabbitMq"
+#      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+    depends_on:
+      product-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      configServer:
+        condition: service_healthy
+#Cart Service
+  cart:
+    image: "microservice/cartservice:v1"
+    container_name: cartmscontainer
+    ports:
+      - "8100:8100"
+    extends:
+     service: microservices-base-config
+     file: common-config.yml
+    environment:
+      SERVER_PORT: 8100
+      MONGODB_URL: mongodb://cart-db:27017/${CART_SERVICE_DB_NAME}
+      MONGODB_DBNAME: ${CART_SERVICE_DB_NAME}
+#      SPRING_PROFILES_ACTIVE: prod
+#      REDIS_HOST: ${REDIS_HOST}
+#      REDIS_PORT: ${REDIS_PORT}
+#      SPRING_RABBITMQ_HOST: "rabbitMq"
+#      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+    depends_on:
+       cart-db:
+         condition: service_healthy
+       redis:
+        condition: service_healthy
+       configServer:
+         condition: service_healthy
+
+
+  #Payment Service
+  payment:
+    image: "microservice/paymentservice:v1"
+    container_name: paymentmscontainer
+    ports:
+      - "8110:8110"
+    extends:
+      service: microservices-base-config
+      file: common-config.yml
+    environment:
+      SERVER_PORT: 8110
+      DATABASE_URL: jdbc:postgresql://paymentdb:5432/${PAYMENT_SERVICE_DB_NAME}
+
+    depends_on:
+      paymentdb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      configServer:
+        condition: service_healthy
+
+# User Service Database Configuration
+  userdb:
+    image: postgres:latest
+    environment:
+#      POSTGRES_USER: ${SQL_DATABASE_USERNAME}
+#      POSTGRES_PASSWORD: ${SQL_DATABASE_PASSWORD}
+      POSTGRES_DB: ${USER_SERVICE_DB_NAME}
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${SQL_DATABASE_USERNAME} -d ${USER_SERVICE_DB_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5431:5432"
+#    networks:
+#      - mspractice
+    extends:
+      service: database_base_config
+      file: common-config.yml
+    volumes:
+      - user-db-data:/var/lib/postgresql
+# Payment Service Database Configuration
+  paymentdb:
+    image: postgres:latest
+    environment:
+#      POSTGRES_USER: ${SQL_DATABASE_USERNAME}
+#      POSTGRES_PASSWORD: ${SQL_DATABASE_PASSWORD}
+      POSTGRES_DB: ${PAYMENT_SERVICE_DB_NAME}
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${SQL_DATABASE_USERNAME} -d ${PAYMENT_SERVICE_DB_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+#    networks:
+#      - mspractice
+    extends:
+      service: database_base_config
+      file: common-config.yml
+    volumes:
+      - payment-db-data:/var/lib/postgresql
+#Product Service Database Configuration
+  product-db:
+    image: mongo:7
+    volumes:
+      - product-db-data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    extends:
+      service: database_base_config
+      file: common-config.yml
+#    networks:
+#      - mspractice
+# Cart Service Database Configuration
+  cart-db:
+      image: mongo:7
+      volumes:
+        - cart-db-data:/data/db
+
+      ports:
+        - "27018:27017"
+      healthcheck:
+        test: [ "CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')" ]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+      extends:
+        service: database_base_config
+        file: common-config.yml
+#      networks:
+#        - mspractice
+# Redis Database Configuration
+  redis:
+      image: redis:7
+      volumes:
+        - redis-data:/data
+      healthcheck:
+        test: [ "CMD", "redis-cli", "ping" ]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+#      networks:
+#        - mspractice
+      extends:
+        service: database_base_config
+        file: common-config.yml
+
+
+networks:
+  mspractice:
+    driver: bridge
+
+volumes:
+  user-db-data:
+  payment-db-data:
+  product-db-data:
+  cart-db-data:
+  redis-data:
+

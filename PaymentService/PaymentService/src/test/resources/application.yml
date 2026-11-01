@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+      import: ""
+    bus:
+      enabled: false
+  datasource:
+    url: "jdbc:h2:mem:testdb"
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+testingvalue:
+  value: "User Service Value changed,No of times-{3}"

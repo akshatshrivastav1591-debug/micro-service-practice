@@ -1,0 +1,47 @@
+#(For Services)->,restart,deploy,network,DB-Password,DB-Driver,Db-Username,REDIS-host,Redis-Port,SPRING_PROFILES_ACTIVE,SPRING_RABBITMQ_HOST,SPRING_CONFIG_IMPORT
+#(For Db)->, POSTGRES_USER, POSTGRES_PASSWORD
+
+ services:
+
+  network-deploy-service:
+    networks:
+      - mspractice
+
+  common-base-config:
+    extends:
+      service:
+        network-deploy-service
+
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 400m
+
+
+  microservices-base-config:
+   environment:
+       DATABASE_PASSWORD: ${SQL_DATABASE_PASSWORD}
+       DATABASE_DRIVER: ${SQL_DATABASE_DRIVER_CLASS_NAME}
+       DATABASE_USERNAME: ${SQL_DATABASE_USERNAME}
+       REDIS_HOST: ${REDIS_HOST}
+       REDIS_PORT: ${REDIS_PORT}
+       SPRING_PROFILES_ACTIVE: prod
+       SPRING_RABBITMQ_HOST: "rabbitMq"
+       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+   extends:
+     service:
+       common-base-config
+
+
+
+  database_base_config:
+    extends:
+      service:
+        network-deploy-service
+
+      environment:
+          POSTGRES_USER: ${SQL_DATABASE_USERNAME}
+          POSTGRES_PASSWORD: ${SQL_DATABASE_PASSWORD}
+
+
