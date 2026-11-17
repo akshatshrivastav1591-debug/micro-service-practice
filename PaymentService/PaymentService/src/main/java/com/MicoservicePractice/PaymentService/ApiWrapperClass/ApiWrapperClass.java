@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ApiWrapperClass<T> {
     private String message;
-    private  boolean isSuccess;
+    private  boolean success;
     private  T data;
     private ExceptionDto errors;
 }

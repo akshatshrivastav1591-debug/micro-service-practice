@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RefreshScope
 @Validated
@@ -57,6 +59,12 @@ public class UserServiceController {
     @GetMapping("/getValue")
     public ResponseEntity<ApiWrapperClass<String>> getValue() {
         return ResponseEntity.ok(new ApiWrapperClass<>("User Service is working fine:", true, value, null));
+    }
+    @GetMapping("/getAllValue/{userID}/{cartID}/{productID}")
+    public ResponseEntity<ApiWrapperClass<Map<String,Object>>> getAllValue(@NotEmpty(message = "UserID can't be empty") @PathVariable String userID,
+                                                                           @NotEmpty(message = "productID can't be empty") @PathVariable String productID,
+                                                                           @NotEmpty(message = "cartID can't be empty") @PathVariable String cartID) {
+        return userService.getAllValue(userID,productID,cartID);
     }
 
 

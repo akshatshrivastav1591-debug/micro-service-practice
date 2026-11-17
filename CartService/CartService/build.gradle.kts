@@ -18,6 +18,9 @@ repositories {
 }
 extra["springCloudVersion"] = "2025.1.4"
 dependencies {
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+	implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
+	implementation("org.springframework.boot:spring-boot-starter-restclient")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.cloud:spring-cloud-starter-bus-amqp:5.1.0-RC1")
 	implementation("org.springframework.cloud:spring-cloud-starter-config")

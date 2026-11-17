@@ -11,7 +11,36 @@ spring:
     username: "guest"
     password: "guest"
 management:
-    endpoints:
-      web:
-        exposure:
-          include: "*"
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+    shutdown:
+      access: unrestricted
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: "CartService"
+    description: "This Service handle the Cart  related operations:"
+    version: "v1"
+    authenticity: "This Service is authenticated by Akshat Shrivastav:"
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8070/eureka/}

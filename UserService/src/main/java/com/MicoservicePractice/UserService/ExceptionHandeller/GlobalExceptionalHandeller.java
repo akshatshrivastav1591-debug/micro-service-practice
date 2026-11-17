@@ -18,6 +18,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -50,6 +51,14 @@ public class GlobalExceptionalHandeller extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiWrapperClass<Void>> handleMissingFieldException(MissingFieldException e, HttpServletRequest request){
         log.error("Missing Field Exception:{}", e.getMessage());
         return  ResponseEntity.status(400).body(new ApiWrapperClass<>("Something Missing in field:",false,null,new ExceptionDto("MissingFieldException",Map.of("MissingField Exception",e.getMessage()), request.getRequestURI(), LocalDateTime.now())));
+    }
+
+    @ExceptionHandler(RestClientException.class)
+    public ResponseEntity<ApiWrapperClass<Void>> handleRestClientException(RestClientException e, HttpServletRequest request){
+        log.error("Rest Client Exception:{}", e.getMessage());
+        e.printStackTrace();
+
+        return  ResponseEntity.status(500).body(new ApiWrapperClass<>("Rest Client Exception:",false,null,new ExceptionDto("RestClientException",Map.of("MissingField Exception",e.getMessage()), request.getRequestURI(), LocalDateTime.now())));
     }
 
     @Override

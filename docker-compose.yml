@@ -19,6 +19,26 @@ services:
     extends:
       service: common-base-config
       file: common-config.yml
+  #Eureka Server
+  eurekaServer:
+    image: "microservice/eurekaserver:v1"
+
+    container_name: eurekamscontainer
+    ports:
+      - "8070:8070"
+    extends:
+      service: microservices-base-config
+      file: common-config.yml
+    depends_on:
+      configServer:
+        condition: service_healthy
+
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8070/actuator/health/readiness" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   #Config Server
   configServer:
@@ -67,6 +87,8 @@ services:
         condition: service_healthy
       configServer:
         condition: service_healthy
+      eurekaServer:
+        condition: service_healthy
 #Product Service
   product:
     image: "microservice/productservice:v1"
@@ -91,6 +113,8 @@ services:
       redis:
         condition: service_healthy
       configServer:
+        condition: service_healthy
+      eurekaServer:
         condition: service_healthy
 #Cart Service
   cart:
@@ -117,6 +141,8 @@ services:
         condition: service_healthy
        configServer:
          condition: service_healthy
+       eurekaServer:
+         condition: service_healthy
 
 
   #Payment Service
@@ -138,6 +164,8 @@ services:
       redis:
         condition: service_healthy
       configServer:
+        condition: service_healthy
+      eurekaServer:
         condition: service_healthy
 
 # User Service Database Configuration
