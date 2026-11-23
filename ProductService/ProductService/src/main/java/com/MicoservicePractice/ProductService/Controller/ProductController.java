@@ -5,6 +5,7 @@ import com.MicoservicePractice.ProductService.Dto.CreateRequestDto;
 import com.MicoservicePractice.ProductService.Dto.ResponseDto;
 import com.MicoservicePractice.ProductService.Dto.UpdateRequestDto;
 import com.MicoservicePractice.ProductService.Service.ProductService;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
@@ -50,8 +51,15 @@ public class ProductController {
     public ResponseEntity<ApiWrapperClass<Void>> testingApi(){
         return  ResponseEntity.ok(new ApiWrapperClass<>("Product Service is Working:",true,null,null));
     }
+    @Bulkhead(name = "getValue",fallbackMethod = "bulkHeadFallBackMethod")
     @GetMapping("/getValue")
-    public ResponseEntity<ApiWrapperClass<String>> getValue() {
+    public ResponseEntity<ApiWrapperClass<String>> getValue() throws InterruptedException {
+         Thread.sleep(10000);
         return ResponseEntity.ok(new ApiWrapperClass<>("User Service is working fine:", true, value, null));
     }
-}
+    public ResponseEntity<ApiWrapperClass<String>> bulkHeadFallBackMethod(Throwable throwable) {
+        System.out.println("FallBack Method Called:");
+        return ResponseEntity.status(429).body(new ApiWrapperClass<>("Fall-Back-Method called:",false,"Too-Many Request,Please try again later",null));
+    }
+    }
+

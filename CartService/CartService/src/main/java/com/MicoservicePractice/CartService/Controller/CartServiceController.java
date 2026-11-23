@@ -4,6 +4,7 @@ import com.MicoservicePractice.CartService.ApiWrapperClass.ApiWrapperClass;
 import com.MicoservicePractice.CartService.Dto.CartRequestDto;
 import com.MicoservicePractice.CartService.Dto.CartResponseDto;
 import com.MicoservicePractice.CartService.Service.CartService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +45,15 @@ public ResponseEntity<ApiWrapperClass<Void>> deleteProduct(@Valid @RequestBody C
 public ResponseEntity<ApiWrapperClass<Void>> testingApi(){
         return  ResponseEntity.ok(new ApiWrapperClass<>("Cart Service is Working:",true,null,null));
 }
+@RateLimiter(name = "getValue",fallbackMethod = "limiterFallbackMethod")
 @GetMapping("/getValue")
 public ResponseEntity<ApiWrapperClass<String>> getValue() {
     return ResponseEntity.ok(new ApiWrapperClass<>("User Service is working fine:", true, value, null));
 }
+
+public ResponseEntity<ApiWrapperClass<String>> limiterFallbackMethod(Throwable throwable){
+        System.out.println("getValueFallBack method called:");
+        return ResponseEntity.status(429).body(new ApiWrapperClass<>("FallBack Method Called",false,"Rate-Limiting pattern test:",null));
+    }
 
 }

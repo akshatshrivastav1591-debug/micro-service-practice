@@ -19,6 +19,27 @@ services:
     extends:
       service: common-base-config
       file: common-config.yml
+  #gateWay Server
+  gatewayServer:
+    image: "microservice/gatewayserver:v1"
+
+    container_name: gatewayservermscontainer
+    ports:
+      - "8072:8072"
+    extends:
+      service: microservices-base-config
+      file: common-config.yml
+    depends_on:
+      product:
+        condition: service_healthy
+      user:
+        condition: service_healthy
+      payment:
+        condition: service_healthy
+      cart:
+        condition: service_healthy
+
+
   #Eureka Server
   eurekaServer:
     image: "microservice/eurekaserver:v1"
@@ -89,6 +110,12 @@ services:
         condition: service_healthy
       eurekaServer:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health/readiness" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 #Product Service
   product:
     image: "microservice/productservice:v1"
@@ -116,6 +143,12 @@ services:
         condition: service_healthy
       eurekaServer:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8090/actuator/health/readiness" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 #Cart Service
   cart:
     image: "microservice/cartservice:v1"
@@ -143,7 +176,12 @@ services:
          condition: service_healthy
        eurekaServer:
          condition: service_healthy
-
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8100/actuator/health/readiness" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   #Payment Service
   payment:
@@ -158,6 +196,7 @@ services:
       SERVER_PORT: 8110
       DATABASE_URL: jdbc:postgresql://paymentdb:5432/${PAYMENT_SERVICE_DB_NAME}
 
+
     depends_on:
       paymentdb:
         condition: service_healthy
@@ -167,6 +206,12 @@ services:
         condition: service_healthy
       eurekaServer:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8110/actuator/health/readiness" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
 # User Service Database Configuration
   userdb:

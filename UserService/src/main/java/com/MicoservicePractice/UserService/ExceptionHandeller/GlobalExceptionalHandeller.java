@@ -32,6 +32,7 @@ public class GlobalExceptionalHandeller extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiWrapperClass<Void>> genericExceptionMethod(Exception e, HttpServletRequest request){
         System.out.println("Error:"+e.getLocalizedMessage());
+        e.printStackTrace();
         return  ResponseEntity.status(500).body(new ApiWrapperClass<>("Server error",false,null,new ExceptionDto("Server Error",Map.of("Server Error","Something went wrong with server:"), request.getRequestURI(), LocalDateTime.now())));
     }
 

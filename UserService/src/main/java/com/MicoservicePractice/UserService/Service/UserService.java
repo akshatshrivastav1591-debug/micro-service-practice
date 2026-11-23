@@ -119,18 +119,21 @@ public class UserService {
         //Payment Details
         ResponseEntity<ApiWrapperClass<List<PaymentResponseDto>>> paymentDetails=paymentClient.getAllPaymentDetails(userID);
         assert paymentDetails.getBody() != null;
-        List<PaymentResponseDto> paymentResponseDtoList=paymentDetails.getBody().getData();
-        responseMap.put("paymentDetails",paymentResponseDtoList);
+        List<PaymentResponseDto> paymentResponseDtoList = paymentDetails.getBody().getData();
+            responseMap.put("paymentDetails", paymentResponseDtoList);
+
         //Cart Service
         ResponseEntity<ApiWrapperClass<CartResponseDto>> cartDetails=cartClient.getProduct(cartID);
         assert cartDetails.getBody() != null;
-        CartResponseDto cartResponseDto= cartDetails.getBody().getData();
-        responseMap.put("cartDetails",cartResponseDto);
+        CartResponseDto cartResponseDto = cartDetails.getBody().getData();
+            responseMap.put("cartDetails", cartResponseDto);
+
         //Product Details
         ResponseEntity<ApiWrapperClass<ResponseDto>> productDetails= productClient.getProductDetails(productID);
         assert productDetails.getBody() != null;
-        ResponseDto productResponseDto=productDetails.getBody().getData();
-        responseMap.put("productDetails",productResponseDto);
-        return   ResponseEntity.ok(new ApiWrapperClass<>("Request Success",true,responseMap,null));
+        ResponseDto productResponseDto = productDetails.getBody().getData();
+            responseMap.put("productDetails", productResponseDto);
+
+            return   ResponseEntity.ok(new ApiWrapperClass<>("Request Success",true,responseMap,null));
     }
 }

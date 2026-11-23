@@ -6,6 +6,8 @@ import com.MicoservicePractice.UserService.Dto.UserRequestDto;
 
 import com.MicoservicePractice.UserService.Dto.UserResponseDto;
 import com.MicoservicePractice.UserService.Service.UserService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 @RestController
 @RefreshScope
@@ -55,11 +58,22 @@ public class UserServiceController {
 
         return ResponseEntity.ok(new ApiWrapperClass<>("User Service is working fine:", true, null, null));
     }
-
+    @RateLimiter(name = "getValue",fallbackMethod = "limiterFallbackMethod")
+//    @Retry(name = "getValue",fallbackMethod = "retryFallbackMethod")
     @GetMapping("/getValue")
     public ResponseEntity<ApiWrapperClass<String>> getValue() {
         return ResponseEntity.ok(new ApiWrapperClass<>("User Service is working fine:", true, value, null));
     }
+
+//    public ResponseEntity<ApiWrapperClass<String>> retryFallbackMethod(Throwable throwable){
+//        System.out.println("getValueFallBack method called:");
+//        return ResponseEntity.status(503).body(new ApiWrapperClass<>("FallBack Method Called",false,"Retry pattern test:",null));
+//    }
+    public ResponseEntity<ApiWrapperClass<String>> limiterFallbackMethod(Throwable throwable){
+        System.out.println("getValueFallBack method called:");
+        return ResponseEntity.status(429).body(new ApiWrapperClass<>("FallBack Method Called",false,"Rate-Limiting pattern test:",null));
+    }
+
     @GetMapping("/getAllValue/{userID}/{cartID}/{productID}")
     public ResponseEntity<ApiWrapperClass<Map<String,Object>>> getAllValue(@NotEmpty(message = "UserID can't be empty") @PathVariable String userID,
                                                                            @NotEmpty(message = "productID can't be empty") @PathVariable String productID,

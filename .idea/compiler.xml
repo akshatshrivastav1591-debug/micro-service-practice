@@ -26,6 +26,9 @@
       <module name="CartService" options="-parameters" />
       <module name="CartService.main" options="-parameters" />
       <module name="CartService.test" options="-parameters" />
+      <module name="GatewayServer" options="-parameters" />
+      <module name="GatewayServer.main" options="-parameters" />
+      <module name="GatewayServer.test" options="-parameters" />
       <module name="PaymentService" options="-parameters" />
       <module name="PaymentService.main" options="-parameters" />
       <module name="PaymentService.test" options="-parameters" />
